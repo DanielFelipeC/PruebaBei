@@ -23,6 +23,7 @@ import pruebabeitech.facade.CustomerFacadeLocal;
 import pruebabeitech.facade.Order1FacadeLocal;
 import pruebabeitech.facade.OrderDetailFacadeLocal;
 import pruebabeitech.facade.ProductFacadeLocal;
+import pruebabeitech.webservices.ImplementarWS;
 
 /**
  *
@@ -174,7 +175,11 @@ public class ProductoView implements Serializable {
         nuevaOrden.setCustomerId(cliente);
         nuevaOrden.setCreationDate(new Date());
         nuevaOrden.setDeliveryAddress(direccionEntrega);
-        nuevaOrden.setTotal(total);
+
+        ImplementarWS imp = new ImplementarWS();
+        Double valorTotal = imp.cotizacion(total, moneda);
+
+        nuevaOrden.setTotal(valorTotal.doubleValue());
 
         int result = facadeOrder.crearOrden(nuevaOrden);
 
@@ -188,15 +193,15 @@ public class ProductoView implements Serializable {
                 detalle.setProductDescription(product.getProductDescription());
                 detalle.setQuantity(cantidadPro.get(product.getProductId()));
                 detalle.setPrice(cantidadPro.get(product.getProductId()) * product.getPrice());
-                
+
                 facadeDetail.insertDetalleOrden(detalle);
             }
 
         }
-        
+
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage("Orden Generada", "Su orden fue creada correctamente"));
-        
+
         direccionEntrega = "";
         productosCarritoOrdenNueva.clear();
     }

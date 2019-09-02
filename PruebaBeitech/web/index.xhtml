@@ -173,7 +173,9 @@
                             </p:column>
 
                             <p:column headerText="Total">
-                                <h:outputText value="#{order.total}" />
+                                <h:outputText value="#{order.total}" >
+                                    <f:convertNumber currencySymbol="$" type="currency" />
+                                </h:outputText>
                             </p:column>
 
                             <p:column headerText="Ver Detalle">
