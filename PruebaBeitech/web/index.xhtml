@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Prueba</title>
+    </h:head>
+    <h:body>
+        <h:form id="pruebaForm">
+
+            <p:growl id="growl" showDetail="true" sticky="true" /> 
+
+            <center><h2>Importamos S.A</h2></center>
+
+            <p:outputLabel value="Digite su correo" />
+
+            <p:inputText id="email1" value="#{productoView.correoCliente}">
+                <p:ajax event="change"/>
+            </p:inputText>
+
+            <p:commandButton value="Consultar" >
+                <p:ajax update="OrdenPanel"  listener="#{productoView.buscarProductorCliente()}"/>
+            </p:commandButton>
+
+            <p:message for="email1" display="tooltip" />
+
+            <br/>
+
+            <h:panelGroup id="OrdenPanel">
+                <p:tabView id="tab1">
+                    <p:tab title="Crear Orden" >
+
+
+                        <p:panelGrid columns="2">
+                            <p:panelGrid columns="2">
+
+                                <f:facet name="header">
+                                    <p:row>
+                                        <p:column >Datos Cliente</p:column>
+                                    </p:row>
+                                </f:facet>
+
+                                <h:outputText value="Nombre" />
+                                <h:outputText value="#{productoView.cliente.name}" />
+
+                                <h:outputText value="Correo" />
+                                <h:outputText value="#{productoView.cliente.email}" />
+
+                                <h:outputText value="Productos" />
+                                <h:outputText value="#{productoView.cliente.productList.size()}" />
+
+
+                            </p:panelGrid>
+
+
+                            <h:panelGroup id="ordenProductos">
+                                <p:outputLabel value="Crear Orden" />
+
+                                <p:dataTable var="prod" value="#{productoView.cliente.productList}">
+                                    <p:column headerText="Id Producto">
+                                        <h:outputText value="#{prod.productId}" />
+                                    </p:column>
+
+                                    <p:column headerText="Nombre Producto">
+                                        <h:outputText value="#{prod.name}" />
+                                    </p:column>
+
+                                    <p:column headerText="Descripcion Producto">
+                                        <h:outputText value="#{prod.productDescription}" />
+                                    </p:column>
+
+                                    <p:column headerText="Precio">
+                                        <h:outputText value="#{prod.price}" />
+                                    </p:column>
+
+                                    <p:column headerText="Agregar">
+                                        <center>
+                                            <p:commandLink  title="Agregar Producto">
+                                                +
+                                                <p:ajax update="pruebaForm:tab1:ordenProductos pruebaForm:growl" listener="#{productoView.agregarProductoCarrito(prod)}"/>
+                                            </p:commandLink>
+                                        </center>
+                                    </p:column>
+                                </p:dataTable>
+
+                                <hr/>
+
+
+                                <p:panelGrid columns="4">
+                                    <f:facet name="header">
+                                        <p:row>
+                                            <p:column >Productos Seleccionados</p:column>
+                                        </p:row>
+                                    </f:facet>
+
+                                    <p:dataTable var="prodN" value="#{productoView.productosCarritoOrdenNueva}">
+                                        <p:column headerText="Id Producto">
+                                            <h:outputText value="#{prodN.productId}" />
+                                        </p:column>
+
+                                        <p:column headerText="Nombre Producto">
+                                            <h:outputText value="#{prodN.name}" />
+                                        </p:column>
+
+                                        <p:column headerText="Descripcion Producto">
+                                            <h:outputText value="#{prodN.productDescription}" />
+                                        </p:column>
+
+                                        <p:column headerText="Precio">
+                                            <h:outputText value="#{prodN.price}" />
+                                        </p:column>
+
+                                        <p:column headerText="Eliminar">
+                                            <center>
+                                                <p:commandLink  title="Eliminar Producto">
+                                                    -
+                                                    <p:ajax update="pruebaForm:tab1:ordenProductos" listener="#{productoView.eliminarProductoCarrito(prodN)}"/>
+                                                </p:commandLink>
+                                            </center>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Direccion de Entrega" />
+                                        <p:inputText value="#{productoView.direccionEntrega}">
+                                            <p:ajax event="change"/>
+                                        </p:inputText>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Seleccionar Moneda" />
+                                        <p:selectOneMenu value="#{productoView.moneda}" >
+                                            <f:selectItem itemLabel="Seleccione uno" itemValue="" />
+                                            <f:selectItem itemLabel="Dolar" itemValue="Dolar" />
+                                            <f:selectItem itemLabel="Euro" itemValue="Euro" />
+                                        </p:selectOneMenu>
+                                    </h:panelGroup>
+
+                                    <p:commandButton value="Generar Orden" >
+                                        <p:ajax update="@form"  listener="#{productoView.crearOrdenCliente()}"/>
+                                    </p:commandButton>
+
+
+
+                                </p:panelGrid>
+
+
+                            </h:panelGroup>
+
+                        </p:panelGrid>
+
+
+
+                    </p:tab>
+                    <p:tab title="Listar Orden">
+
+                        <p:outputLabel value="Mis Ordenes" />
+
+                        <p:dataTable var="order" value="#{productoView.ordenesCliente}">
+                            <p:column headerText="Id">
+                                <h:outputText value="#{order.orderId}" />
+                            </p:column>
+
+                            <p:column headerText="Direccion Entrega">
+                                <h:outputText value="#{order.deliveryAddress}" />
+                            </p:column>
+
+                            <p:column headerText="Fecha">
+                                <h:outputText value="#{order.creationDate}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Total">
+                                <h:outputText value="#{order.total}" />
+                            </p:column>
+
+                            <p:column headerText="Ver Detalle">
+                                <p:commandButton icon="pi pi-search" title="Ver Detalle">
+                                    <p:ajax update="pruebaForm:overPanel" oncomplete="PF('ordeDe').show('#{component.clientId}')" listener="#{productoView.buscarDetalleOrden(order.orderId)}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+
+
+                    </p:tab>
+                </p:tabView>
+                <p:overlayPanel id="overPanel" style="max-width: 500px" widgetVar="ordeDe" showEffect="fade" hideEffect="fade" dismissable="false" showCloseIcon="true">
+                    <h:panelGroup id="orderDetail" style="text-align:center;">
+                        <p:dataTable var="detalle" value="#{productoView.detalleOrden}">
+                            <p:column headerText="Id Producto">
+                                <h:outputText value="#{detalle.productId}" />
+                            </p:column>
+
+                            <p:column headerText="Nombre Producto">
+                                <h:outputText value="#{detalle.productId.name}" />
+                            </p:column>
+
+                            <p:column headerText="Descripcion Producto">
+                                <h:outputText value="#{detalle.productDescription}" />
+                            </p:column>
+
+                            <p:column headerText="Cantidad">
+                                <h:outputText value="#{detalle.quantity}" />
+                            </p:column>
+
+                            <p:column headerText="Valor">
+                                <h:outputText value="#{detalle.price}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </p:overlayPanel>
+            </h:panelGroup>
+        </h:form>
+
+    </h:body>
+</html>
+
